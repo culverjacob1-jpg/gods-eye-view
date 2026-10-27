@@ -44,8 +44,9 @@ https://gods-eye-view-production-cd78.up.railway.app/
 Project dashboard:
 https://railway.com/project/c655da1b-0838-4d3a-9de7-fe90865cd635
 
-Deployment `e51ffb56-6ad7-4c0c-832a-c367d7c8cda4` serves application revision
-`6901f2b4`. The repository was uploaded using Railway CLI; GitHub automatic
+Deployment `85eb334c-70a4-4568-a73e-dcf215ee5af4` serves application revision
+`f670295c`, including the public map-provider build arguments. Health and
+password-protection checks passed after deployment. The repository was uploaded using Railway CLI; GitHub automatic
 deployment is not connected. Later documentation commits do not change the
 currently deployed application.
 
