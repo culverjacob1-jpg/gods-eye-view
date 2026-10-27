@@ -2,14 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHostedGate } from '../../deploy/railway-auth.mjs';
 const password = 'local-test-only-password-123';
-function run(url, authorization, method = 'GET') {
+function run(url, authorization, method = 'GET', options) {
   const result = { headers: {}, passed: false };
   const response = {
     setHeader(k, v) { result.headers[k] = v; },
     writeHead(status, headers) { result.status = status; Object.assign(result.headers, headers); },
     end(body) { result.body = body; },
   };
-  createHostedGate(password)({url, method, headers: {authorization}}, response, () => result.passed = true);
+  createHostedGate(password, options)({url, method, headers: {authorization}}, response, () => result.passed = true);
   return result;
 }
 test('hosting refuses an absent or short password', () => {
@@ -26,4 +26,19 @@ test('requires correct username and password for pages and API routes', () => {
   assert.equal(run('/', auth(`gev:${password}`)).passed, true);
   assert.equal(run('/api/military', auth(`gev:${password}`)).passed, true);
   for (const value of ['', 'Basic !!!', auth(`wrong:${password}`), auth('gev:wrong')]) assert.equal(run('/', value).status, 401);
+});
+test('explicit public access permits anonymous pages and API routes without a challenge', () => {
+  assert.doesNotThrow(() => createHostedGate(undefined, { publicAccess: true }));
+  for (const path of ['/', '/assets/app.js', '/api/military']) {
+    const result = run(path, undefined, 'GET', { publicAccess: true });
+    assert.equal(result.passed, true);
+    assert.equal(result.headers['WWW-Authenticate'], undefined);
+    assert.equal(result.headers['X-Content-Type-Options'], 'nosniff');
+  }
+  assert.equal(run('/healthz', undefined, 'GET', { publicAccess: true }).status, 200);
+});
+test('public access requires an explicit boolean opt-in', () => {
+  for (const value of [undefined, false, 'false', 'true', 1]) {
+    assert.throws(() => createHostedGate(undefined, { publicAccess: value }));
+  }
 });

@@ -40,7 +40,7 @@ intentionally embedded in the hosted browser build.
 
 ## Railway deployment
 
-The password-protected website is deployed and healthy:
+The website is configured for public access at the user’s request:
 https://gods-eye-view-production-cd78.up.railway.app/
 
 Project dashboard:
@@ -48,19 +48,20 @@ https://railway.com/project/c655da1b-0838-4d3a-9de7-fe90865cd635
 
 Deployment `dc41f246-fab1-4842-ad22-f9e75b90875c` serves application revision
 `445b4035`, with the restricted public Cesium credential configured. Health and
-password-protection checks passed after deployment. The repository was uploaded using Railway CLI; GitHub automatic
+access checks passed after the earlier protected deployment. The repository was uploaded using Railway CLI; GitHub automatic
 deployment is not connected. Later documentation commits do not change the
 currently deployed application.
 
-The username is `gev`. The generated password was handed off in the private
-local `outputs/Website access.txt` file outside this repository. It is also
-stored in the ignored `.local/railway.password` file. It is not in GitHub.
+The website no longer requires a username or password. `GEV_PUBLIC_ACCESS=1`
+explicitly enables anonymous access to the page and its provider endpoints.
+Anyone with the URL can use the site and consume shared provider allowances.
+The health route and response safety headers remain. Original provider-side
+cross-site checks and credential restrictions are unchanged. Desktop Codex
+credentials are not reused for voice.
 
-The hosted server serves built assets and the original provider middleware
-behind HTTP Basic authentication. The server refuses to start without a
-`GEV_HTTP_PASSWORD` of at least 20 characters. Only the exact `/healthz` readiness
-route is public. Railway supplies HTTPS and the allowed public hostname.
-Desktop Codex credentials are not reused for voice.
+To restore private hosting, unset `GEV_PUBLIC_ACCESS` or set it to `0` and
+redeploy with a `GEV_HTTP_PASSWORD` of at least 20 characters. Authentication
+remains the default when public access is not explicitly enabled.
 
 The service's saved Railway settings explicitly select
 `deploy/Dockerfile.railway`, `node deploy/start-railway.mjs`, and `/healthz`.
@@ -98,9 +99,8 @@ Service CPU/RAM caps and sleeping reduce resource use but do not cap dollars.
 Railway's workspace hard limit can stop all projects, including unrelated ones.
 See https://docs.railway.com/pricing/cost-control for current control behavior.
 
-The upstream server remains an exploratory development/preview server. The
-password protects this hosted instance; upstream cross-site and credential
-protections remain intact. Some key-bearing endpoints deliberately reject
+The upstream server remains an exploratory development/preview server. Upstream cross-site and credential
+protections remain intact; the hosted access gate is now explicitly public. Some key-bearing endpoints deliberately reject
 reverse-proxy requests. Enabling paid providers remotely needs a separate
 review of their quotas and upstream sharing constraints.
 
