@@ -100,6 +100,50 @@ protections remain intact. Some key-bearing endpoints deliberately reject
 reverse-proxy requests. Enabling paid providers remotely needs a separate
 review of their quotas and upstream sharing constraints.
 
+## Connecting Google 3D
+
+Google 3D remains unconfigured. For this personal project, the preferred next
+step is Cesium ion Community: it includes 1,000 Google Photorealistic 3D root
+tiles per month for eligible individual personal/non-commercial use. It also
+has other quotas, including 15 GB streaming per month. No active Cesium browser
+session was present; no new account, terms, token, or subscription was created.
+See https://cesium.com/platform/cesium-ion/pricing/ for current eligibility.
+
+After the user completes account/terms approval, use a public `assets:read`
+token restricted to this website and the required assets. Set Railway
+`CESIUM_ION_TOKEN`, then rebuild/redeploy. This route does not require enabling
+direct Google Cloud billing. Google place search and Street View are separate.
+
+The alternative direct integration needs Google Cloud billing, Map Tiles API
+(`tile.googleapis.com`), and a browser API key restricted to that API and:
+`https://gods-eye-view-production-cd78.up.railway.app/*`.
+Do not reuse a server-only or unrelated project key. Set Railway
+`GOOGLE_MAPS_API_KEY`, then rebuild/redeploy. Current Google pricing lists
+1,000 free root requests/month, then $6 per 1,000 at the first paid tier;
+allowances aggregate at billing-account level. A root session can support
+three hours of rendering. New Google billing has not been approved.
+
+The dedicated Dockerfile declares both public credentials as build arguments;
+runtime-only variables cannot alter an already-built browser bundle. Provider
+restrictions are necessary because these credentials are intentionally public.
+Server-only keys and the website password must never be build arguments.
+Dummy-marker builds verified both public values reach the browser bundle,
+while a server-only Google marker does not.
+
+On October 27, no relevant credentials were found in Railway, project dotenv
+files, shell environment, or documented Google Maps Keychain entries. The
+personal Jacob Culver Google account was verified. The new empty project
+`gods-eye-view-512921` was automatically linked to existing billing when created;
+that link was immediately removed. The Cloud console now explicitly shows
+**Billing is disabled**. No Map Tiles API, API key, or workload was created.
+Other projects were not changed. The detailed audit and proof are in the
+workspace's local `outputs` folder, outside this repository.
+
+Sources: https://developers.google.com/maps/documentation/tile/get-api-key,
+https://developers.google.com/maps/documentation/tile/usage-and-billing,
+https://developers.google.com/maps/billing-and-pricing/pricing,
+https://docs.railway.com/builds/dockerfiles.
+
 ## Licenses
 
 Source code is MIT, copyright Bilawal Sidhu. Bundled data, imagery and models

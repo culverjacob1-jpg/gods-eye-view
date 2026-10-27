@@ -4,6 +4,12 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
+# Browser-visible provider credentials only. Restrict the Google key to this
+# site's HTTPS origin and Map Tiles API; use an origin-restricted public
+# assets:read Cesium token. Vite embeds these during build, not server startup.
+# Never add server-only secrets or GEV_HTTP_PASSWORD as build arguments.
+ARG GOOGLE_MAPS_API_KEY
+ARG CESIUM_ION_TOKEN
 RUN npm run build && chown -R node:node /app
 USER node
 ENV NODE_ENV=production
