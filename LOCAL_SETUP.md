@@ -31,10 +31,12 @@ camera, radio and other sources, but individual sources can be delayed, limited,
 or unavailable. Treat each layer's status as the authority for that session.
 FIRMS active fires showed unavailable during the initial browser check.
 
-Google photorealistic 3D, enhanced terrain, voice and various provider upgrades
-require their own accounts or credentials. None were configured during setup.
+Google photorealistic 3D and World Terrain are now connected through a
+restricted public Cesium ion token on the hosted website. Voice and other
+provider upgrades remain unconfigured.
 The local launcher does not automatically reuse the desktop Codex sign-in for
-voice. No provider credentials are committed or embedded in this build.
+voice. No provider credentials are committed. The restricted public Cesium token is
+intentionally embedded in the hosted browser build.
 
 ## Railway deployment
 
@@ -44,8 +46,8 @@ https://gods-eye-view-production-cd78.up.railway.app/
 Project dashboard:
 https://railway.com/project/c655da1b-0838-4d3a-9de7-fe90865cd635
 
-Deployment `85eb334c-70a4-4568-a73e-dcf215ee5af4` serves application revision
-`f670295c`, including the public map-provider build arguments. Health and
+Deployment `dc41f246-fab1-4842-ad22-f9e75b90875c` serves application revision
+`445b4035`, with the restricted public Cesium credential configured. Health and
 password-protection checks passed after deployment. The repository was uploaded using Railway CLI; GitHub automatic
 deployment is not connected. Later documentation commits do not change the
 currently deployed application.
@@ -78,7 +80,8 @@ December 1, 2026, so future deployment maintenance should migrate that file.
   each upstream layer is independent of the website's health.
 - Production build passed. Full test commands passed: 8,810 tests passed,
   2 skipped, 0 failed, including allocation probes and new authentication tests.
-- Google photorealistic 3D and voice have not been configured.
+- Google 3D was subsequently configured and visually verified in Austin.
+  Voice remains unconfigured.
 
 ## Cost and spending controls
 
@@ -101,49 +104,42 @@ protections remain intact. Some key-bearing endpoints deliberately reject
 reverse-proxy requests. Enabling paid providers remotely needs a separate
 review of their quotas and upstream sharing constraints.
 
-## Connecting Google 3D
+## Google 3D through Cesium Community
 
-Google 3D remains unconfigured. For this personal project, the preferred next
-step is Cesium ion Community: it includes 1,000 Google Photorealistic 3D root
-tiles per month for eligible individual personal/non-commercial use. It also
-has other quotas, including 15 GB streaming per month. No active Cesium browser
-session was present; no new account, terms, token, or subscription was created.
-See https://cesium.com/platform/cesium-ion/pricing/ for current eligibility.
+Connected and visually verified on October 27, 2026. The existing personal
+`culverjacob1-jpg` account's Billing page confirms Community. Its UI lists
+1,000 Google Photorealistic 3D Tiles sessions and 15 GiB streaming; the public
+pricing page describes monthly allowances for eligible individual personal,
+non-commercial use. No paid upgrade was added.
+https://cesium.com/platform/cesium-ion/pricing/
 
-After the user completes account/terms approval, use a public `assets:read`
-token restricted to this website and the required assets. Set Railway
-`CESIUM_ION_TOKEN`, then rebuild/redeploy. This route does not require enabling
-direct Google Cloud billing. Google place search and Street View are separate.
+A dedicated `Gods Eye View Railway` public token has only `assets:read` and
+is restricted to asset 2275207 (Google 3D), asset 1 (World Terrain), and
+`https://gods-eye-view-production-cd78.up.railway.app/`.
+The default token was not reused. Bing imagery, Google Places and Street View
+are outside this token's scope; the presence of a token can still expose Bing
+buttons in the upstream UI even though their assets are not authorized.
 
-The alternative direct integration needs Google Cloud billing, Map Tiles API
-(`tile.googleapis.com`), and a browser API key restricted to that API and:
-`https://gods-eye-view-production-cd78.up.railway.app/*`.
-Do not reuse a server-only or unrelated project key. Set Railway
-`GOOGLE_MAPS_API_KEY`, then rebuild/redeploy. Current Google pricing lists
-1,000 free root requests/month, then $6 per 1,000 at the first paid tier;
-allowances aggregate at billing-account level. A root session can support
-three hours of rendering. New Google billing has not been approved.
-
-The dedicated Dockerfile declares both public credentials as build arguments;
-runtime-only variables cannot alter an already-built browser bundle. Provider
-restrictions are necessary because these credentials are intentionally public.
+Railway `CESIUM_ION_TOKEN` supplies the credential to the Docker build. Its
+public value is intentionally in the browser bundle; no credential is in Git.
 Server-only keys and the website password must never be build arguments.
-Dummy-marker builds verified both public values reach the browser bundle,
-while a server-only Google marker does not.
+Local `.local/cesium-ion.token` is ignored, private to the local user, and
+excluded from deployment uploads. The local launcher does not automatically
+use it; the token only permits the hosted website's referrer.
 
-On October 27, no relevant credentials were found in Railway, project dotenv
-files, shell environment, or documented Google Maps Keychain entries. The
-personal Jacob Culver Google account was verified. The new empty project
-`gods-eye-view-512921` was automatically linked to existing billing when created;
-that link was immediately removed. The Cloud console now explicitly shows
-**Billing is disabled**. No Map Tiles API, API key, or workload was created.
-Other projects were not changed. The detailed audit and proof are in the
-workspace's local `outputs` folder, outside this repository.
+The authorized asset endpoints returned 200, an unrelated asset returned 404,
+and a request without a referrer returned 403. The deployed site showed actual
+textured 3D city geometry and Google Maps attribution in Austin. Health and
+password checks passed; resource settings and idle sleeping are unchanged.
+See the workspace's `outputs` folder for screenshots and sanitized evidence.
 
-Sources: https://developers.google.com/maps/documentation/tile/get-api-key,
-https://developers.google.com/maps/documentation/tile/usage-and-billing,
-https://developers.google.com/maps/billing-and-pricing/pricing,
-https://docs.railway.com/builds/dockerfiles.
+Direct Google Cloud keys remain absent. No direct Google billing or API was
+activated. The dedicated empty project `gods-eye-view-512921` was previously
+verified with billing disabled after its automatic billing link was removed.
+Other account services remain unchanged.
+
+Token guidance: https://cesium.com/learn/ion/cesium-ion-access-tokens/
+Build guidance: https://docs.railway.com/builds/dockerfiles
 
 ## Licenses
 
