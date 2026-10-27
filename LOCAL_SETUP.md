@@ -7,7 +7,8 @@ https://www.youtube.com/watch?v=PBThLgs2AZc on October 27, 2026.
 - Upstream: https://github.com/bilawalsidhu/gods-eye-view
 - Starting revision: `15de9d738c4a85be1a96726c6114181caef87eeb`
 - Your fork: https://github.com/culverjacob1-jpg/gods-eye-view
-- Local website: http://127.0.0.1:4173/
+- Hosted website: https://gods-eye-view-production-cd78.up.railway.app/
+- Local website (when the launcher is running): http://127.0.0.1:4173/
 
 ## Start on this Mac
 
@@ -35,33 +36,68 @@ require their own accounts or credentials. None were configured during setup.
 The local launcher does not automatically reuse the desktop Codex sign-in for
 voice. No provider credentials are committed or embedded in this build.
 
-## Railway preparation
+## Railway deployment
 
-Railway is a suitable persistent Node host for the project's server-side feeds.
-A static-only host would omit those routes. `railway.json` selects the dedicated
-container recipe and `/healthz` readiness endpoint. The hosted server serves
-built assets with the original provider middleware, behind HTTP Basic auth.
+The password-protected website is deployed and healthy:
+https://gods-eye-view-production-cd78.up.railway.app/
 
-Before deployment, set a long random `GEV_HTTP_PASSWORD` (at least 20 characters)
-as a Railway secret. The username is `gev`. The server refuses to start without
-this password. Railway supplies `PORT` and `RAILWAY_PUBLIC_DOMAIN`; the latter
-is used as the exact allowed hostname. Deploy behind Railway's HTTPS endpoint.
-Do not set `GEV_BIND_HOST` on Railway; it exists only for local verification.
-
-An empty Railway project/service has been prepared, with no active deployment:
+Project dashboard:
 https://railway.com/project/c655da1b-0838-4d3a-9de7-fe90865cd635
 
-Hosting consumes metered CPU, RAM and egress. The existing account is Pro, with
-$20 included monthly usage; the account showed $2.94 used on October 27, 2026.
-This is shared with existing projects and is not a guarantee of zero additional
-charges. No billed workload was started during initial preparation.
-Railway's hard spending limit is workspace-wide and can stop unrelated services,
-so no account-wide limit was changed.
+Deployment `e51ffb56-6ad7-4c0c-832a-c367d7c8cda4` serves application revision
+`6901f2b4`. The repository was uploaded using Railway CLI; GitHub automatic
+deployment is not connected. Later documentation commits do not change the
+currently deployed application.
+
+The username is `gev`. The generated password was handed off in the private
+local `outputs/Website access.txt` file outside this repository. It is also
+stored in the ignored `.local/railway.password` file. It is not in GitHub.
+
+The hosted server serves built assets and the original provider middleware
+behind HTTP Basic authentication. The server refuses to start without a
+`GEV_HTTP_PASSWORD` of at least 20 characters. Only the exact `/healthz` readiness
+route is public. Railway supplies HTTPS and the allowed public hostname.
+Desktop Codex credentials are not reused for voice.
+
+The service's saved Railway settings explicitly select
+`deploy/Dockerfile.railway`, `node deploy/start-railway.mjs`, and `/healthz`.
+It runs one replica, capped at 0.5 GB RAM and 0.5 vCPU, with sleeping enabled.
+The legacy `railway.json` is supplemental; Railway has announced support ending
+December 1, 2026, so future deployment maintenance should migrate that file.
+
+## Verified on October 27, 2026
+
+- Railway deployment succeeded and `/healthz` returned HTTP 200.
+- Homepage and flight API returned HTTP 401 without the password.
+- Authenticated homepage returned HTTP 200; Chrome sign-in and imagery rendered.
+- Chrome tracked a live aircraft and showed nearby ADS-B flight contacts.
+- The global OpenSky `/api/flights` request returned HTTP 502; server logs showed
+  upstream timeouts. Nearby adsb.lol contacts still loaded. AIS vessels were
+  unavailable, and terrain-height refreshes were incomplete. Availability of
+  each upstream layer is independent of the website's health.
+- Production build passed. Full test commands passed: 8,810 tests passed,
+  2 skipped, 0 failed, including allocation probes and new authentication tests.
+- Google photorealistic 3D and voice have not been configured.
+
+## Cost and spending controls
+
+Hosting was started after explicit approval of Railway metered usage. A rough
+planning estimate for this app is **$2–$8 per month for light personal use**,
+excluding existing services. This is not a measured monthly bill or a cap;
+continuous active feeds, bandwidth, and usage patterns can change it.
+
+The Pro workspace includes $20 of shared monthly usage. At setup, Railway
+reported approximately $2.94 used for the October 21–November 21 period.
+The live usage-limit API reported `usageLimit: null`: **no workspace compute
+hard spending cap was set**. Existing billing settings were left unchanged.
+Service CPU/RAM caps and sleeping reduce resource use but do not cap dollars.
+Railway's workspace hard limit can stop all projects, including unrelated ones.
+See https://docs.railway.com/pricing/cost-control for current control behavior.
 
 The upstream server remains an exploratory development/preview server. The
-password gate protects the entire hosted instance; upstream cross-site and
-credential protections remain intact. Some key-bearing endpoints deliberately
-reject reverse-proxy requests. Enabling paid providers remotely needs a separate
+password protects this hosted instance; upstream cross-site and credential
+protections remain intact. Some key-bearing endpoints deliberately reject
+reverse-proxy requests. Enabling paid providers remotely needs a separate
 review of their quotas and upstream sharing constraints.
 
 ## Licenses
