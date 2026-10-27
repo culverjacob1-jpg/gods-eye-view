@@ -1,0 +1,10 @@
+FROM node:24.22.1-slim
+ENV PUPPETEER_SKIP_DOWNLOAD=1
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+RUN npm run build && chown -R node:node /app
+USER node
+ENV NODE_ENV=production
+CMD ["node", "deploy/start-railway.mjs"]
