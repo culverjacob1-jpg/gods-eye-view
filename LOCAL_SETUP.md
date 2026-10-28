@@ -46,9 +46,9 @@ https://gods-eye-view-production-cd78.up.railway.app/
 Project dashboard:
 https://railway.com/project/c655da1b-0838-4d3a-9de7-fe90865cd635
 
-Deployment `dc41f246-fab1-4842-ad22-f9e75b90875c` serves application revision
-`445b4035`, with the restricted public Cesium credential configured. Health and
-access checks passed after the earlier protected deployment. The repository was uploaded using Railway CLI; GitHub automatic
+Deployment `72e49dc1-73e6-4d17-ace8-09adc738acb0` serves application revision
+`87cf2b53`, with public access and the restricted Cesium credential configured.
+Anonymous homepage, scripts and API access were verified after deployment. The repository was uploaded using Railway CLI; GitHub automatic
 deployment is not connected. Later documentation commits do not change the
 currently deployed application.
 
@@ -72,8 +72,10 @@ December 1, 2026, so future deployment maintenance should migrate that file.
 ## Verified on October 27, 2026
 
 - Railway deployment succeeded and `/healthz` returned HTTP 200.
-- Homepage and flight API returned HTTP 401 without the password.
-- Authenticated homepage returned HTTP 200; Chrome sign-in and imagery rendered.
+- The initial private deployment required sign-in. The user later requested
+  public access; anonymous homepage and script requests now return HTTP 200
+  without an authentication challenge. An API validation request reached its
+  handler without credentials. Five access-mode tests passed.
 - Chrome tracked a live aircraft and showed nearby ADS-B flight contacts.
 - The global OpenSky `/api/flights` request returned HTTP 502; server logs showed
   upstream timeouts. Nearby adsb.lol contacts still loaded. AIS vessels were
@@ -130,7 +132,7 @@ use it; the token only permits the hosted website's referrer.
 The authorized asset endpoints returned 200, an unrelated asset returned 404,
 and a request without a referrer returned 403. The deployed site showed actual
 textured 3D city geometry and Google Maps attribution in Austin. Health and
-password checks passed; resource settings and idle sleeping are unchanged.
+anonymous access checks passed; resource settings and idle sleeping are unchanged.
 See the workspace's `outputs` folder for screenshots and sanitized evidence.
 
 Direct Google Cloud keys remain absent. No direct Google billing or API was
