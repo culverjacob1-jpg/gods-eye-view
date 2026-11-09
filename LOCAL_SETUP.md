@@ -46,11 +46,16 @@ https://gods-eye-view-production-cd78.up.railway.app/
 Project dashboard:
 https://railway.com/project/c655da1b-0838-4d3a-9de7-fe90865cd635
 
-Deployment `72e49dc1-73e6-4d17-ace8-09adc738acb0` serves application revision
-`87cf2b53`, with public access and the restricted Cesium credential configured.
-Anonymous homepage, scripts and API access were verified after deployment. The repository was uploaded using Railway CLI; GitHub automatic
-deployment is not connected. Later documentation commits do not change the
-currently deployed application.
+On November 8, 2026, Railway deployment `23c4b1c8-5db8-4ca1-a09d-3d7c95abac48`
+went live from fork commit `f7ca1297`, which includes upstream `745c1196`.
+The homepage and health check returned HTTP 200 without credentials. Chrome
+loaded Google 3D through the existing Cesium token and opened the new chat panel.
+The hosted service has no OpenAI or Gemini API key. Its provider routes also
+retain upstream's restriction on requests through a reverse proxy.
+
+Deployments use Railway CLI uploads. The previous deployment was
+`72e49dc1-73e6-4d17-ace8-09adc738acb0` (application revision `87cf2b53`).
+The fork tag `rollback/pre-upstream-20261108` preserves the pre-upgrade source.
 
 The website no longer requires a username or password. `GEV_PUBLIC_ACCESS=1`
 explicitly enables anonymous access to the page and its provider endpoints.
